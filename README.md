@@ -1,27 +1,64 @@
-# 2. Geolocator:
+# 3. Geolocator:
 
-## Add a freestyle UI5 frontend
+## Roles and Authorization Checks In CAP
 
-With our running service exposing the necessary data, it is now time to provide a frontend.
+At the moment, anyone can access our data exposed by the service. Let us now secure access to our data by implementing roles and authorization in CAP
 
-## UI5
+## Install Passport
 
-To make our life easier I've provided a zip file containing the UI5 app we'll use as our frontend.
+As we are using the Nodejs runtime of CAP, we will add the **passport** module to enable authentication.
 
-Extract the content of the **UI5.zip** and paste the **geolocator** folder and its content under the **app** directory.
+(passport is a Express-compatible authentication middleware for Node.js)
 
-Each file being self explaining with necessary comments, there will be no need to copy and past each line of code.
-
-Our UI5 application consumes the CAP service and expose the **Users** entity data in a table format.
-Clicking on a row wil show the city of the user on the map.
-
-## Run the application
-
-Make sure the CAP service is running
-
-```cds
-cds watch
+```bash
+npm install passport
 ```
 
-Open following link in your web browser (the CAP framework will automatically pickup and expose any webapp under the app folder):
-http://localhost:4004/geolocator/webapp/index.html
+## CAP role restrictions
+
+We restrict access to Users data by adding following restriction to the **geolocator-service.cds**:
+
+```cds
+using {com.geolocator as db} from '../db/datamodel';
+
+@(requires : 'authenticated-user')
+@path : 'service/geolocator'
+service GeolocatorService {
+    entity Users @(restrict : [{
+        grant : ['READ'],
+        to    : ['GeoViewer']
+    }]) as projection on db.Users;
+}
+```
+
+Only **authenticated** user with the **GeoViewer** role can now access our data.
+
+## Add local user for testing
+
+In CAP we are able to add test users with specific role. This all happen in the **.cdsrc.json** file:
+
+```json
+{
+  "auth": {
+    "passport": {
+      "strategy": "mock",
+      "users": {
+        "geo@test.com": {
+          "password": "password",
+          "ID": "geo@test.com",
+          "roles": ["authenticated-user", "GeoViewer"]
+        }
+      }
+    }
+  }
+}
+```
+
+## Test the app
+
+When accessing the service in your browser, you get a basic auth popup now, asking for your user and password.
+
+username: geo@test.com
+password: **password**
+
+(you may want to restart your browser first)

@@ -1,6 +1,10 @@
 using {com.geolocator as db} from '../db/datamodel';
 
+@(requires : 'authenticated-user')
 @path : 'service/geolocator'
 service GeolocatorService {
-    entity Users as projection on db.Users;
+    entity Users @(restrict : [{
+        grant : ['READ'],
+        to    : ['GeoViewer']
+    }]) as projection on db.Users;
 }
