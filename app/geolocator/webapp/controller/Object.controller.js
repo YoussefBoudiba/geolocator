@@ -62,7 +62,7 @@ sap.ui.define([
 		 */
 		_onObjectMatched: function (oEvent) {
 			var sObjectId = oEvent.getParameter("arguments").objectId;
-			this._bindView("/Students" + sObjectId);
+			this._bindView("/Users" + sObjectId);
 		},
 
 		/**
