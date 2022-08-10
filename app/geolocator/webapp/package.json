@@ -1,5 +1,5 @@
 {
-  "name": "bootcamp",
+  "name": "geolocator",
   "version": "0.0.1",
   "scripts": {
     "build": "npm run clean && npm run zip",
