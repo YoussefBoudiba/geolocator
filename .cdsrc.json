@@ -1,0 +1,14 @@
+{
+  "auth": {
+    "passport": {
+      "strategy": "mock",
+      "users": {
+        "geo@test.com": {
+          "password": "password",
+          "ID": "geo@test.com",
+          "roles": ["authenticated-user", "GeoViewer"]
+        }
+      }
+    }
+  }
+}

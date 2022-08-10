@@ -1,0 +1,85 @@
+<mvc:View
+		controllerName="com.geolocator.controller.Main"
+		xmlns:mvc="sap.ui.core.mvc"
+		xmlns:core="sap.ui.core" 
+		xmlns="sap.m"
+		xmlns:f="sap.f"
+		xmlns:layout="sap.ui.layout"
+		height="100%">
+		<f:DynamicPage id="dynamicPageId">
+			<!-- DynamicPage Title -->
+			<f:title>
+				<f:DynamicPageTitle>
+					<f:heading>
+						<HBox alignContent="Center">
+						<Title text="Geolocator"/>
+						<Image src="https://cdn-icons-png.flaticon.com/128/2991/2991231.png" width="20px" height="20px"/>
+						</HBox>
+					</f:heading>
+					<f:actions>
+						<Button
+								icon="sap-icon://action"
+								type="Transparent"/>
+					</f:actions>
+				</f:DynamicPageTitle>
+			</f:title>
+			<!-- DynamicPage Header -->
+			<f:header>
+				<f:DynamicPageHeader pinnable="true">
+					<core:HTML id="html"></core:HTML>			
+				</f:DynamicPageHeader>
+			</f:header>
+			<f:content>
+				<Table id="idProductsTable"
+						sticky="HeaderToolbar,ColumnHeaders"
+						inset="false"
+						items="{
+							path: '/Users',
+							sorter: {
+								path: 'city'
+							}
+						}"
+					   class="sapFDynamicPageAlignContent"
+					   width="auto">
+					<headerToolbar>
+						<Toolbar>
+							<Title text="Users (10)" level="H2"/>
+						</Toolbar>
+					</headerToolbar>
+					<columns>
+						<Column>
+							<Text text="Full Name" />
+						</Column>
+						<Column>
+							<Text text="Phone Number" />
+						</Column>
+						<Column>
+							<Text text="Email" />
+						</Column>
+						<Column>
+							<Text text="City" />
+						</Column>
+						<Column visible="false">
+							<Text text="Map" />
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem type="Active" press="setMap">
+							<cells>
+								<ObjectIdentifier
+										title="{fullName}" />
+								<Text
+										text="{phoneNumber}" />
+								<Link
+										text="{email}" />
+								<Text
+										text="{city}" />
+								<Text
+										text="{map}" />
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</f:content>
+		</f:DynamicPage>
+</mvc:View>

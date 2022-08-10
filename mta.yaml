@@ -1,0 +1,152 @@
+# ---------------------------------------------------------------
+# --------------------- Geolocator IaC --------------------------
+# ---------------------------------------------------------------
+_schema-version: '3.1'
+ID: geolocator
+version: 1.0.0
+description: "Geolocator App"
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm run tsc:srv
+        - npx -p @sap/cds-dk cds build --production
+# ---------------------------------------------------------------
+# --------------------- MODULES ---------------------------------
+# ---------------------------------------------------------------
+modules:
+  # ---------------------------------------------------------------
+  # --------------------- SERVER MODULE ---------------------------
+  # ---------------------------------------------------------------
+  - name: geolocator-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      disk-quota: 256M
+      memory: 128M
+      keep-existing:
+        service-bindings: true
+    properties:
+      API_DESTINATION: "GEO_API"
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        public: true
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: geolocator-destination
+      - name: geolocator-uaa
+  # ---------------------------------------------------------------
+  # --------------------- DEST CONTENT ----------------------------
+  # ---------------------------------------------------------------
+  - name: geolocator-destination-content # The managed approuter uses to access the UI of the application, and it's used for authentication.
+    type: com.sap.application.content
+    requires:
+      - name: geolocator-uaa
+        parameters:
+          service-key:
+            name: geolocator-uaa-service-key
+      - name: geolocator-html-repo-host
+        parameters:
+          service-key:
+            name: geolocator-html-repo-host-service-key
+      - name: geolocator-destination
+        parameters:
+          content-target: true
+          service-key:
+            name: geolocator-destination-service-key
+    parameters:
+      content:
+        instance:
+          destinations:
+            - Name: geolocator-html-repo-host-service
+              ServiceInstanceName: geolocator-html-repo-host
+              ServiceKeyName: geolocator-html-repo-host-service-key
+              sap.cloud.service: basic.service
+            - Authentication: OAuth2UserTokenExchange
+              Name: geolocator-uaa-service
+              ServiceInstanceName: geolocator-uaa
+              ServiceKeyName: geolocator-uaa-service-key
+              sap.cloud.service: basic.service
+          existing_destinations_policy: update
+    build-parameters:
+      no-source: true
+  # ---------------------------------------------------------------
+  # --------------------- UI DEPLOYER -----------------------------
+  # ---------------------------------------------------------------
+  # Enables content to be uploaded automatically with the Generic Application Content Deployer (GACD) module
+  - name: geolocator-ui-deployer
+    type: com.sap.application.content
+    path: ui_deployer
+    requires:
+      - name: geolocator-html-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - HTML5Module.zip
+          name: geolocator-HTML5Module
+          target-path: resources/
+  # ---------------------------------------------------------------
+  # --------------------- HTML5 MODULE ----------------------------
+  # ---------------------------------------------------------------
+  - name: geolocator-HTML5Module
+    type: html5
+    path: app/geolocator/webapp
+    build-parameters:
+      builder: custom
+      commands:
+        - npm run build
+      supported-platforms: []
+# ---------------------------------------------------------------
+# --------------------- RESOURCES -------------------------------
+# ---------------------------------------------------------------
+resources:
+  # ---------------------------------------------------------------
+  # --------------------- DESTINATION RESOURCE --------------------
+  # ---------------------------------------------------------------
+  - name: geolocator-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-name: geolocator-destination
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: true
+        version: 1.0.0
+        init_data:
+          instance:
+            destinations:
+              - Authentication: NoAuthentication
+                HTML5.ForwardAuthToken: true
+                Name: srv-api
+                ProxyType: Internet
+                Type: HTTP
+                URL: ~{srv-api/srv-url}
+            existing_destinations_policy: update
+    requires:
+      - name: srv-api
+  # ---------------------------------------------------------------
+  # --------------------- HTML5 RESOURCE --------------------------
+  # ---------------------------------------------------------------
+  - name: geolocator-html-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+  # ---------------------------------------------------------------
+  # --------------------- UAA RESOURCE ----------------------------
+  # ---------------------------------------------------------------
+  - name: geolocator-uaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      path: ./xs-security.json
+      service: xsuaa
+      service-plan: application
+      config:
+        xsappname: geolocator-${org}-${space}
+        tenant-mode: dedicated

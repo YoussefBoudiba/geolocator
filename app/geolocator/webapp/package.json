@@ -1,0 +1,9 @@
+{
+  "name": "geolocator",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "npm run clean && npm run zip",
+    "zip": "npx bestzip HTML5Module.zip *",
+    "clean": "npx rimraf HTML5Module.zip dist"
+  }
+}

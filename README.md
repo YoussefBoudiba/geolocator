@@ -1,4 +1,3 @@
-
 # Geolocator
 
 The **Geolocator** app is a multi target application using several **BTP** (Business Technologie Platform)/open source services and technologies.
