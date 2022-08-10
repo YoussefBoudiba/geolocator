@@ -9,6 +9,9 @@
       "name": "cds run",
       "request": "launch",
       "type": "node-terminal",
+      "env": {
+        "API_DESTINATION": "GEO_API"
+      },
       "skipFiles": [ "<node_internals>/**" ]
     }
   ]
