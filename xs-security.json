@@ -1,0 +1,17 @@
+{
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.GeoViewer",
+      "description": "GeoViewer"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "GeoViewer",
+      "description": "generated",
+      "scope-references": ["$XSAPPNAME.GeoViewer"],
+      "attribute-references": []
+    }
+  ]
+}

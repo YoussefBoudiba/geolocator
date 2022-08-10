@@ -1,73 +1,7 @@
-# 4. Geolocator
-
-## Deploy to BTP using MTA
-
-Until now the app has been running locally on our computers. It is now time to deploy our application to BTP and use it from there.
-
-## Add security descriptor file
-
-Our app is secured as only **authenticated** users with **GeoViewer** **role** can access the Users data.
-But we need to tell BTP what and how to create those roles.
-
-Using cds cli we can create the security descriptor (xs-security.json) and extend cap configuration using:
-
-```bash
-cds add xsuaa --for production
-```
-
-This adds the XSUAA service to the `package.json` file of our project and creates the XSUAA security configuration file: **xs-security.json**
-
-```json
-{
-  "xsappname": "geolocator",
-  "scopes": [
-    {
-      "name": "$XSAPPNAME.GeoViewer",
-      "description": "GeoViewer"
-    }
-  ],
-  "attributes": [],
-  "role-templates": [
-    {
-      "name": "GeoViewer",
-      "description": "generated",
-      "scope-references": ["$XSAPPNAME.GeoViewer"],
-      "attribute-references": []
-    }
-  ]
-}
-```
-
-## package.json
-
-Update the packackge.json by declaring a nodejs version and adding additional scripts:
-
-```json
-{
-  "engines": {
-    "node": "^16"
-  },
-  "name": "geolocator",
-  ...
-  "scripts": {
-    "start": "cds run",
-    "api:trial": "cf api https://api.cf.us10.hana.ondemand.com && cf login",
-    "tsc:srv": "cd srv && tsc && cd ..",
-    "build:ui": "ui5 build --config=ui/ui5.yaml --clean-dest --dest ui/dist --include-task=generateManifestBundle",
-    "build": "mbt build --mtar=geolocator.mtar"
-  }
-  ...
-```
-
-## Add MTA descriptor file
-
-Create mta.yaml file and paste the following content:
-
-```yaml
 # ---------------------------------------------------------------
 # --------------------- Geolocator IaC --------------------------
 # ---------------------------------------------------------------
-_schema-version: "3.1"
+_schema-version: '3.1'
 ID: geolocator
 version: 1.0.0
 description: "Geolocator App"
@@ -216,37 +150,3 @@ resources:
       config:
         xsappname: geolocator-${org}-${space}
         tenant-mode: dedicated
-```
-
-## Deploy the MTA
-
-Before deploying our application we make sure to first delete the **data** folder under **db**.
-
-Build the mta descriptor file into mtar.
-
-```bash
-npm run build
-```
-
-Note this will not succeed.. can you guess why?
-
-```
-<details>
-<summary>TITLE</summary>
-
-You need to create at the root of your project:
-ui_deployer/resources
-
-</details>
-```
-
-Deploy the module to your current Cloud Foundry space:
-
-```bash
-cf deploy
-```
-
-Now navigate to your trial subaccount
-Under **HTML5 Applications** you will find your deployed application.
-
-Assuming you created the necessary roles, you'll now have a deployed Geolocator app!
