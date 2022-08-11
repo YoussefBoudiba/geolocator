@@ -244,7 +244,7 @@ You need to create at the root of your project:
 Deploy the module to your current Cloud Foundry space:
 
 ```bash
-cf deploy
+cf deploy mta_archives/geolocator.mtar
 ```
 
 Now navigate to your trial subaccount
