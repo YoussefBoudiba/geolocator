@@ -230,15 +230,16 @@ npm run build
 
 Note this will not succeed.. can you guess why?
 
-```
+
 <details>
-<summary>TITLE</summary>
+<summary>Show answer</summary>
 
 You need to create at the root of your project:
-ui_deployer/resources
+
+**ui_deployer/resources**
 
 </details>
-```
+
 
 Deploy the module to your current Cloud Foundry space:
 
