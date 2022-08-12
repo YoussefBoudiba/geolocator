@@ -2,7 +2,10 @@
 
 The **Geolocator** app is a multi target application using several **BTP** (Business Technologie Platform)/open source services and technologies.
 
+![app](https://user-images.githubusercontent.com/4164941/184292536-bd1c21f6-9343-49d9-b345-1412cba1d8a5.png)
+
 ## Branches
+
 
 The main branch consist of the full working application with a **MTA** descriptor file for the deployment to your BTP subaccount.
 
