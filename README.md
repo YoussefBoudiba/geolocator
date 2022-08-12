@@ -243,7 +243,15 @@ Add the following **tsconfig.json** file under the **srv** folder:
 We need to install the xsenv module. This a utility module for easily reading application configurations for bound services and certificates in the SAP Cloud Platform Cloud Foundry environment
 
 ```bash
-npm i @sap/xsenv
+npm i @sap/xsenv 
+```
+
+### axios
+
+Promise based HTTP client for the browser and node.js
+
+```bash
+npm i axios
 ```
 
 ### Service definition
