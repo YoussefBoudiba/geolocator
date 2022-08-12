@@ -90,7 +90,7 @@ modules:
     type: nodejs
     path: gen/srv
     parameters:
-      disk-quota: 256M
+      disk-quota: 500M
       memory: 128M
       keep-existing:
         service-bindings: true
