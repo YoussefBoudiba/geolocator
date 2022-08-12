@@ -48,13 +48,12 @@ using {managed} from '@sap/cds/common';
 
 entity Users : managed {
     key ID          : UUID @(Core.Computed : true);
-        firstName   : String;
+        fullName    : String;
         lastName    : String;
         phoneNumber : String;
         email       : String;
         city        : String;
         map         : String;
-        company     : String;
 }
 ```
 
